@@ -8,7 +8,7 @@ async function signup(e){
             email:e.target.email.value,
             password:e.target.password.value,
         }
-        console.log(signUpDetails);
+        console.log(signUpDetails); 
 
        const response = await axios.post("#",signUpDetails);
        if(response.status===200)
