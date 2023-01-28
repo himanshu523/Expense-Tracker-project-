@@ -21,7 +21,7 @@ async function signup(e){
                 e.target.email.value ="";
                 e.target.password.value="";
                 alert('user created successfully');
-
+                
               }
     
     }
@@ -30,10 +30,7 @@ async function signup(e){
         {
              return alert('user already exists');
         }
-        else(err.response.status===500)
-        {
-            alert('bad parameters')
-        }
+        
     }
    
 

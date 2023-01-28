@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/Css/signup.css">
+    <title>Document</title>
+</head>
+<body>
+    <form action="#"  onsubmit="login(event)">
+        <label for="details" style="color: rgb(247, 241, 241);">Enter your details</label><br><br>
+<table>
+  <tr> 
+    <td><label for="email">Email:</label></td>
+    <td><input type="email" name="email" required><br><br></td>
+  </tr>
+  <tr>
+    <td><label for="pasword">Password:</label></td>
+    <td><input type="password" name="password" required><br><br></td>
+  </tr>
+</table>
+    <button type="submit">login</button> &nbsp; <a href="http://localhost:3000/signup" style="color: aliceblue;">New User? Click Here.</a>
+    <p id="error-text" style="color: red; font-size:small; font-family: Arial, Helvetica, sans-serif;"></p>
+  </form>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.4/axios.min.js"></script>
+<script src="/js/login.js"> </script>
+</html>
