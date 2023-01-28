@@ -28,8 +28,12 @@ async function signup(e){
     catch(err){
         if(err.response.status===403)
         {
-             return alert('user already exists');
+          e.target.name.value="";
+          e.target.email.value ="";
+          e.target.password.value="";
+              alert('user already exists');
         }
+    
         
     }
    

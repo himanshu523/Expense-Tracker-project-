@@ -4,6 +4,11 @@ const rootDir = require('../util/path');
 
 const User = require('../model/user');
 
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
+
+
 exports.getLogin = async (req,res,next)=>{
     console.log("LOGIN PAGE");
     res.sendFile(path.join(rootDir,"view","login.html"));
@@ -14,33 +19,45 @@ exports.getSignup = async(req,res,next)=>{
     res.sendFile(path.join(rootDir,'view','signup.html'))
 }
 
-exports.addUser = async(req,res,next)=>{
+exports.addUser = (req,res,next)=>{
         const name = req.body.name;
         const email = req.body.email;
         const password = req.body.password;
-     try{
-        await User.create({
-            name:name,
-            email:email,
-            password:password,
-        })  //.then(()=>{     }).
-            res.status(201).json({success:true,message:' created new user'});
-        }
-       catch(err){
-            if(err.name ==='SequelizeUniqueConstraintError')
-            {
-                return res.status(403).json({success:true,message:err.name});
-            }
-        
-        }
-        
+
+        if(name.length>0 && email.length>0 && password.length>0)
+        {
+            
+            bcrypt.hash(password, saltRounds, async function(error, hash) {
+                // Store hash in your password DB.
+                try{
+                await User.create(
+                    {
+                        name: name, 
+                        email: email, 
+                        password: hash
+                    })
+                        res.status(201).send({success: true, message: 'new user created'});
+                  }
+                    catch(err){
+                        if(err.name ==='SequelizeUniqueConstraintError')
+                        {
+                            return res.status(403).json({success:true,message:err.name});
+                        }
+                        };
+                }) ;         
+    }
+    else
+    {
+        res.status(400).json({success:false,message:'bad parameters'});
+    } 
+  
      
 }
 
 exports.postLogin =async (req,res,next)=>{
       const email= req.body.email;
       const password = req.body.password;
-
+    
       try{
         const users = await User.findAll({where:{email:email}});
         //console.log(users[0]);
@@ -48,22 +65,28 @@ exports.postLogin =async (req,res,next)=>{
         if(!user)
         {
             console.log('no user');
-            return  res.status(400).json({message:'user doesnt exist'})
+            return  res.status(404).json({success:false,message:'user doesnt exist'})
         }
         //console.log(user.password);
-        if(user.password === password)
-        {
-            console.log('password match')
-            res.status(200).json({message:'user found'})
-        }
-        else{
-            res.status(401).json({message:'incorrect password'});
-        }
+        bcrypt.compare(password,user.password,(err,result)=>{
+            if(err)
+            {
+                throw new Error('something went wrong');
+            }
+            if(result===true)
+            {
+                console.log('password match')
+                res.status(200).json({success:true,message:'user found'})
+            }
+            else{
+                res.status(401).json({success:false,message:'incorrect password'});
+            }
+        })
       }
       catch(err)
       {
         console.log(err);
-        res.status(500).json({message:err})
+        res.status(500).json({success:false,message:err})
       }
 
 }

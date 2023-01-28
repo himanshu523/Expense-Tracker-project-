@@ -19,7 +19,7 @@ async function login(e)
      {
         console.log(err.response.status);
         
-        if(err.response.status==400)
+        if(err.response.status==404)
         {
             clearInput(e);
             clearError();
