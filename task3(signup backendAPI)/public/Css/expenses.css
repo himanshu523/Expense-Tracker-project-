@@ -1,0 +1,27 @@
+form{
+      text-decoration: double;
+    border-radius: 5%;
+
+    background-color: rgb(41, 242, 38);
+    border-width: 2%;
+     height: max-content;
+     border-color: blue;
+    
+}
+body{
+    background-color: rgb(161, 207, 207);
+}
+div{
+    padding-left: 32%;
+    box-sizing: border-box;
+    padding-top: 4%;
+    padding-bottom: 4%;
+} 
+
+ul{
+    text-size-adjust: 2;
+}
+
+
+
+

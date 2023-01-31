@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/Css/expenses.css">
+    <title>Expense App</title>
+    
+  </head>
+  <body>
+   
+      <form  id="mainform"class="form" action="#" onsubmit="saveToLocalStorage(event)">
+        <div class="form-control">
+          <label>Choose Expenses Amount</label>
+          <input type="text" id="amount" placeholder="Expenses Amount" /><br><br>
+          <label>Choose Description</label>
+          <input type="text" id="description" placeholder="Enter Description" /><br><br>
+          <label>Choose Category</label>
+          <select id="category">
+            <option value="Fuel">Fuel</option>
+            <option value="Food">Food</option>
+            <option value="Electricity">Electricity</option>
+            <option value="Movie">Movie</option>
+          </select><br><br>
+          <button class="submitBtn" type="submit">Submit</button>
+        </div>
+        
+      </form><br>
+      <hr width="100%" size="5px" style="background-color: rgb(239, 227, 227)" />
+      <ul id="expenseTracker"></ul>
+      
+  </body>
+
+    <!-- axios - for network call --> 
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+        
+    <script src="js/expenses.js"></script>
+  </body>
+</html>

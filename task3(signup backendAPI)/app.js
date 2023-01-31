@@ -8,6 +8,8 @@ const path = require('path');
 
 const userRoutes = require('./routes/userroutes');
 
+const expenseRoutes = require('./routes/expenseroutes');
+
 const errorControllers = require('./controllers/errorcontrollers');
 
 const Sequelize = require('sequelize');
@@ -20,7 +22,9 @@ app.use(bodyParser.json({extended:false}));
 
 app.get('/favicon.ico',(req,res)=>  res.status(204).end());
 
-app.use(userRoutes);
+app.use('/user',userRoutes);
+
+app.use('/expense',expenseRoutes);
 
 app.use(errorControllers.err404);
 

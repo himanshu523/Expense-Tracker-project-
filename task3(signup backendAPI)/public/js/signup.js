@@ -13,7 +13,7 @@ async function signup(e){
 
     
 
-       const response = await axios.post("http://localhost:3000/addUser",signUpDetails);
+       const response = await axios.post("http://localhost:3000/user/addUser",signUpDetails);
       // console.log(response);
         if(response.status===201)
               {

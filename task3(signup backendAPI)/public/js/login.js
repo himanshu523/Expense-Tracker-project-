@@ -6,12 +6,13 @@ async function login(e)
         password:e.target.password.value,
     }
      try{
-     const response = await axios.post("http://localhost:3000/login",loginDetails);
+     const response = await axios.post("http://localhost:3000/user/login",loginDetails);
         if(response.status === 200)
         {   
             clearError();
             clearInput(e);
             confirm('user logged in successfully!');
+            window.location.href="http://localhost:3000/expense";;
         }
       
 
