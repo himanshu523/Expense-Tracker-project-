@@ -15,6 +15,8 @@ const errorControllers = require('./controllers/errorcontrollers');
 const Sequelize = require('sequelize');
 
 const sequelize = require('./util/database');
+const User = require('./model/expense');
+const Expense = require('./model/expense');
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -28,6 +30,8 @@ app.use('/expense',expenseRoutes);
 
 app.use(errorControllers.err404);
 
-sequelize.sync().then(()=>{
+
+
+//sequelize.sync({fo}).then(()=>{
     app.listen(3000);
-}).catch(err=>console.log(err));
+//}).catch(err=>console.log(err));
