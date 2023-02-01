@@ -8,8 +8,10 @@ async function saveToLocalStorage(e) {
             category: e.target.category.value
         }
         console.log(addExpense)
-
-        const response = await axios.post('http://localhost:3000/expense/addExpense', addExpense).then(response => {
+    
+        const token = localStorage.getItem('token');
+        console.log(token);
+        const response = await axios.post('http://localhost:3000/expense/addExpense',addExpense,{ headers:{"Authorization":token}}).then(response => {
                 alert(response.data.message)
                 addNewExpensetoUI(response.data.expense);
         })
@@ -21,7 +23,8 @@ async function saveToLocalStorage(e) {
 // DOMContentLoaded
 window.addEventListener('DOMContentLoaded', async () => {
     try{
-        await axios.get('http://localhost:3000/expense/getExpense').then(response => {
+        const token = localStorage.getItem('token');
+        await axios.get('http://localhost:3000/expense/getExpense',{headers:{"Authorization":token}}).then(response => {
             response.data.expenses.forEach(expense => {
                 addNewExpensetoUI(expense);
             })
@@ -57,7 +60,8 @@ function addNewExpensetoUI(expense) {
 // Delete Expense
 function deleteExpense(e, expenseId) {
     try{
-    axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`).then((response) => {
+        const token  = localStorage.getItem('token')
+    axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`,{headers:{"Authorization":token}}).then((response) => {
         removeExpensefromUI(expenseId)
         alert(response.data.message)
     })

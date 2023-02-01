@@ -25,7 +25,7 @@ exports.addExpense = async (req, res) => {
         return res.status(400).json({err: "Bad parameters . Something is missing"})
         
     }
-    await Expense.create({ expenseamount, description, category }).then((expense) => {
+    await Expense.create({ expenseamount, description, category ,userId:req.user.id}).then((expense) => {
         return res.status(201).json({ expense, success: true, message: "Expense Added to DB" });
         
       }
@@ -38,7 +38,7 @@ exports.addExpense = async (req, res) => {
 // Get Expense
 exports.getExpense = (req, res) => {
   try{
-  Expense.findAll().then(expenses => {
+  Expense.findAll({where:{userId:req.user.id}}).then(expenses => {
     return res.status(200).json({expenses, success:true})
   })
   }catch(err) {
@@ -55,7 +55,7 @@ exports.deleteExpense = (req, res) => {
     return res.status(400).json({success: false, message: 'Error Expense Id'});
 
   }
-  Expense.destroy({ where: { id: expenseid }}).then(() => {
+  Expense.destroy({ where: { id: expenseid ,userId:req.user.id}}).then(() => {
     return res.status(200).json({ success: true, message: 'Deleted Successfully'})
   }).catch(err => {
     console.log(err);

@@ -11,6 +11,7 @@ async function login(e)
         {   
             clearError();
             clearInput(e);
+            localStorage.setItem('token',response.data.token);
             confirm('user logged in successfully!');
             window.location.href="http://localhost:3000/expense";;
         }

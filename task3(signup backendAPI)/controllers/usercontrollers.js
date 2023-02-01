@@ -8,6 +8,13 @@ const bcrypt = require('bcrypt');
 
 const saltRounds = 10;
 
+const jwt = require('jsonwebtoken');
+
+function generateAccessToken(id)
+{
+    return jwt.sign({userId:id},'secretKey');
+}
+
 
 exports.getLogin = async (req,res,next)=>{
     console.log("LOGIN PAGE");
@@ -76,7 +83,7 @@ exports.postLogin =async (req,res,next)=>{
             if(result===true)
             {
                 console.log('password match')
-                res.status(200).json({success:true,message:'user found'})
+                res.status(200).json({success:true,message:'user found',token:generateAccessToken(user.id)});
             }
             else{
                 res.status(401).json({success:false,message:'incorrect password'});

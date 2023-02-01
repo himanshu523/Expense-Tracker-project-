@@ -3,7 +3,7 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-const User = sequelize.define('UUser',{
+const User = sequelize.define('users',{
     id:{
          type:Sequelize.INTEGER,
          allowNull:false,
@@ -27,5 +27,14 @@ const User = sequelize.define('UUser',{
 
    }
 )
+
+const Expense = require('./expense')
+
+User.hasMany(Expense);
+Expense.belongsTo(User);
+
+sequelize.sync().then((res)=>{
+    console.log('usersequelized')
+}).catch(err=>console.log(err));
 
 module.exports = User;
