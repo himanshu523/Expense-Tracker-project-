@@ -38,8 +38,9 @@ exports.addUser = (req,res,next)=>{
                 // Store hash in your password DB.
                 try{
                 await User.create(
+                    
                     {
-                        name: name, 
+                        name: name,  
                         email: email, 
                         password: hash
                     })

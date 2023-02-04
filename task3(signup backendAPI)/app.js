@@ -10,6 +10,8 @@ const userRoutes = require('./routes/userroutes');
 
 const expenseRoutes = require('./routes/expenseroutes');
 
+const purchaseRoutes = require('./routes/purchaseroutes');
+
 const errorControllers = require('./controllers/errorcontrollers');
 
 const Sequelize = require('sequelize');
@@ -27,6 +29,8 @@ app.get('/favicon.ico',(req,res)=>  res.status(204).end());
 app.use('/user',userRoutes);
 
 app.use('/expense',expenseRoutes);
+
+app.use('/purchase',purchaseRoutes);
 
 app.use(errorControllers.err404);
 

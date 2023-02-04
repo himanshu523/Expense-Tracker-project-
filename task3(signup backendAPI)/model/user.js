@@ -23,12 +23,17 @@ const User = sequelize.define('users',{
     password:{
         type:Sequelize.STRING,
         allowNull:false,
-    }
+    },
+    ispremium:Sequelize.BOOLEAN,
 
    }
 )
 
 const Expense = require('./expense')
+const Order = require('./orders');
+
+User.hasMany(Order);
+Order.belongsTo(User);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
