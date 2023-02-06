@@ -6,6 +6,8 @@ const userAuthenticate = require('../middleware/auth');
 
 router.get('/', expenseControllers.gethtml);
 
+//router.get('/expensepremium',userAuthenticate.authenticate,expenseControllers.premium);
+
 router.post('/addExpense',userAuthenticate.authenticate, expenseControllers.addExpense);
 
 router.get('/getExpense',userAuthenticate.authenticate, expenseControllers.getExpense);

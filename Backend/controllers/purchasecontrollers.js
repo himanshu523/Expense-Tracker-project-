@@ -5,8 +5,8 @@ const Order = require('../model/orders')
 const purchasepremium =async (req, res) => {
     try {
         var rzp = new Razorpay({
-            key_id: 'rzp_test_rMidd2cC9D5Umn',
-            key_secret: 'B6f0vEghAig1EkFS0B7yC7Fj'
+            key_id: 'rzp_test_J2XxPaHWSG57bc',
+            key_secret: '837rrNa7I19aVKRZ1VqwrpbB'
         })
         const amount =200000;
 
@@ -34,9 +34,9 @@ const purchasepremium =async (req, res) => {
         const { payment_id, order_id} = req.body;
         Order.findOne({where : {orderid : order_id}}).then(order => {
             order.update({ paymentid: payment_id, status: 'SUCCESSFUL'}).then(() => {
-                req.user.update({ispremium: True});
+                req.user.update({ispremium:true});
                 console.log(req.user);
-                return res.status(202).json({sucess: true, message: "Transaction Successful"});
+                return res.status(202).json({success: true, message: "Transaction Successful"});
             }).catch((err)=> {
                 throw new Error(err);
             })

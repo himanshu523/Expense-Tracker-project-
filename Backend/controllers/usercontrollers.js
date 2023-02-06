@@ -83,8 +83,16 @@ exports.postLogin =async (req,res,next)=>{
             }
             if(result===true)
             {
-                console.log('password match')
-                res.status(200).json({success:true,message:'user found',token:generateAccessToken(user.id)});
+                if(user.ispremium==true)
+                {
+                    console.log('premium user');
+                    res.status(200).json({success:true,message:'premium user',token:generateAccessToken(user.id)})
+                }
+                else{
+                    console.log('not premium user');
+                    res.status(200).json({success:false,message:'not premium user',token:generateAccessToken(user.id)})
+                }
+                
             }
             else{
                 res.status(401).json({success:false,message:'incorrect password'});

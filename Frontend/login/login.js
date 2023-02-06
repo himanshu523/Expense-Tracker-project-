@@ -13,7 +13,13 @@ async function login(e)
             clearInput(e);
             localStorage.setItem('token',response.data.token);
             confirm('user logged in successfully!');
-            window.location.href="http://localhost:3000/expense";;
+            if(response.data.success===true)
+            {
+                window.location.href = "../expense/expensepremium.html";
+            }
+            else{
+                window.location.href="../expense/expenses.html";
+            }
         }
       
 

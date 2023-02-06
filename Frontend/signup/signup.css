@@ -1,0 +1,22 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+form{
+    background-color: #0c0c0c;
+    text-align: center;
+    margin-top: 5%;
+    margin-left: 32%;
+    margin-right: 34%;
+    padding: 2rem;
+    border-left-style: inherit; 
+}
+body{
+    background-color: #cdc8c6;
+}
+
+label{
+    color: rgb(14, 175, 197);
+    padding: 0.5rem;
+}
+

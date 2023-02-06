@@ -20,6 +20,9 @@ const sequelize = require('./util/database');
 const User = require('./model/expense');
 const Expense = require('./model/expense');
 
+var cors = require("cors");
+app.use(cors());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(bodyParser.json({extended:false}));

@@ -9,6 +9,10 @@ exports.gethtml = (req,res,next)=>{
     res.sendFile(path.join(rootDir,'view','expenses.html'));
 }
 
+exports.premium = (req,res,next)=>{
+  res.sendFile(path.join(rootDir,'view','expensepremium.html'));
+}
+
 function isstringinvalid(string) {
     if(string == undefined || string.length === 0) {
         return true
