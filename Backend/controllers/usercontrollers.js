@@ -16,15 +16,7 @@ function generateAccessToken(id)
 }
 
 
-exports.getLogin = async (req,res,next)=>{
-    console.log("LOGIN PAGE");
-    res.sendFile(path.join(rootDir,"view","login.html"));
-}
 
-exports.getSignup = async(req,res,next)=>{
-    console.log('SIGNUP PAGE');
-    res.sendFile(path.join(rootDir,'view','signup.html'))
-}
 
 exports.addUser = (req,res,next)=>{
         const name = req.body.name;
