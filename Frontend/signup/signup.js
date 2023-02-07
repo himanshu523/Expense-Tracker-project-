@@ -21,6 +21,7 @@ async function signup(e){
                 e.target.email.value ="";
                 e.target.password.value="";
                 alert('user created successfully');
+                window.location.href="../login/login.html"
                 
               }
     

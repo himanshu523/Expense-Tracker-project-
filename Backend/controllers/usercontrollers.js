@@ -10,15 +10,16 @@ const saltRounds = 10;
 
 const jwt = require('jsonwebtoken');
 
-function generateAccessToken(id)
-{
+const generateAccessToken=(id)=>{
     return jwt.sign({userId:id},'secretKey');
 }
 
+    
 
 
 
-exports.addUser = (req,res,next)=>{
+
+const addUser = (req,res,next)=>{
         const name = req.body.name;
         const email = req.body.email;
         const password = req.body.password;
@@ -54,7 +55,7 @@ exports.addUser = (req,res,next)=>{
      
 }
 
-exports.postLogin =async (req,res,next)=>{
+const postLogin =async (req,res,next)=>{
       const email= req.body.email;
       const password = req.body.password;
     
@@ -97,4 +98,10 @@ exports.postLogin =async (req,res,next)=>{
         res.status(500).json({success:false,message:err})
       }
 
+}
+
+module.exports={
+    generateAccessToken,
+    postLogin,
+    addUser,
 }

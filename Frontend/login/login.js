@@ -59,5 +59,10 @@ function clearInput(e)
     e.target.password.value="";
 }
 
+function forgotpassword()
+{
+    window.location.href="../forgotpassword/forgotpassword.html"
+}
+
 
 
