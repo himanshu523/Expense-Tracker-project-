@@ -1,25 +1,18 @@
-function forgotpassword(e)
-{
+const form = document.getElementById('forgot-password-form');
+const emailField = document.getElementById('email');
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = e.target.email.value;
-    
-    console.log(email);
-    const forgotDetails={
-        email,
-    }
-    try{
-       const response = axios.post("http://localhost:3000/parrword/forgotpassword",forgotDetails);
-       if(response.status ===202)
-          {
-             document.body.innerHTML+='<div style="color:red;">Mail Successfuly sent <div>';
-          }
-        else{
-            throw new Error('something went wrong')
+    try {
+        const email = emailField.value;
+        console.log(email);
+        let res = await axios.post('http://localhost:3000/password/forgotpassword', {email: email});
+
+        if(res.status === 200) {
+            confirm(`${res.data.message}`);
+            window.location.href = '../login/login.html';
         }
 
-       }
-       catch(err)
-       {
-        document.body.innerHTML+=`<h3 style="color:red;">${err}<h3>`
-       }
-}
+    } catch (error) {
+        console.log(error);
+    }
+})
