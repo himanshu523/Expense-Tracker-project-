@@ -31,12 +31,16 @@ const User = sequelize.define('users',{
 
 const Expense = require('./expense')
 const Order = require('./orders');
+const forgotPassword = require('./forgotpassword')
 
 User.hasMany(Order);
 Order.belongsTo(User);
 
 User.hasMany(Expense);
 Expense.belongsTo(User);
+
+User.hasMany(forgotPassword);
+forgotPassword.belongsTo(User);
 
 sequelize.sync().then((res)=>{
     console.log('usersequelized')

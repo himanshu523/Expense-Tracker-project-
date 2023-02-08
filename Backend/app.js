@@ -12,6 +12,8 @@ const expenseRoutes = require('./routes/expenseroutes');
 
 const purchaseRoutes = require('./routes/purchaseroutes');
 
+const passwordRoutes = require('./routes/passwordroutes')
+
 const errorControllers = require('./controllers/errorcontrollers');
 
 const Sequelize = require('sequelize');
@@ -34,6 +36,8 @@ app.use('/user',userRoutes);
 app.use('/expense',expenseRoutes);
 
 app.use('/purchase',purchaseRoutes);
+
+app.use('/password',passwordRoutes);
 
 app.use(errorControllers.err404);
 
