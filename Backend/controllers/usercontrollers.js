@@ -10,8 +10,8 @@ const saltRounds = 10;
 
 const jwt = require('jsonwebtoken');
 
-const generateAccessToken=(id)=>{
-    return jwt.sign({userId:id},'secretKey');
+const generateAccessToken=(id,name,ispremium)=>{
+    return jwt.sign({userId:id,name:name,ispremium},'secretKey');
 }
 
     
@@ -79,11 +79,11 @@ const postLogin =async (req,res,next)=>{
                 if(user.ispremium==true)
                 {
                     console.log('premium user');
-                    res.status(200).json({success:true,message:'premium user',token:generateAccessToken(user.id)})
+                    res.status(200).json({success:true,message:'premium user',token:generateAccessToken(user.id,user.name,user.ispremium)})
                 }
                 else{
                     console.log('not premium user');
-                    res.status(200).json({success:false,message:'not premium user',token:generateAccessToken(user.id)})
+                    res.status(200).json({success:true,message:'not premium user',token:generateAccessToken(user.id,user.name,user.ispremium)})
                 }
                 
             }
@@ -99,6 +99,8 @@ const postLogin =async (req,res,next)=>{
       }
 
 }
+
+
 
 module.exports={
     generateAccessToken,

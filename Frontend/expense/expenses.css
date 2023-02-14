@@ -11,7 +11,7 @@ form{
 body{
     background-color: rgb(161, 207, 207);
 }
-div{
+#mainform{
     padding-left: 32%;
     box-sizing: border-box;
     padding-top: 4%;
@@ -20,6 +20,20 @@ div{
 
 ul{
     text-size-adjust: 2;
+}
+
+#leaderboard-div{
+    padding-left: 1%;
+    box-sizing: border-box;
+    padding-top: 2%;
+    padding-bottom: 5%;
+}
+
+#expansion{
+    padding-left: 1%;
+    box-sizing: border-box;
+    padding-top: -2%;
+    padding-bottom: 4%
 }
 
 

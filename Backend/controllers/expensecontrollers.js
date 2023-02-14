@@ -1,17 +1,12 @@
 const Expense = require('../model/expense');
+const User = require('../model/user')
 
 const path = require('path');
 
 const rootDir = require('../util/path');
 
 
-exports.gethtml = (req,res,next)=>{
-    res.sendFile(path.join(rootDir,'view','expenses.html'));
-}
 
-exports.premium = (req,res,next)=>{
-  res.sendFile(path.join(rootDir,'view','expensepremium.html'));
-}
 
 function isstringinvalid(string) {
     if(string == undefined || string.length === 0) {
@@ -30,11 +25,16 @@ exports.addExpense = async (req, res) => {
         
     }
     await Expense.create({ expenseamount, description, category ,userId:req.user.id}).then((expense) => {
+         const totalexpense =Number(req.user.totalExpenses) + Number(expenseamount);
+         User.update({totalExpenses:totalexpense},{where:{id:req.user.id}}).then(async()=>{
+            res.status(200)
+         })
         return res.status(201).json({ expense, success: true, message: "Expense Added to DB" });
         
       }
     );
-  } catch (err) {
+  } catch (err) {;
+    console.log(err)
     return res.status(500).json({ success: false, error: err });
     
   }
@@ -66,3 +66,4 @@ exports.deleteExpense = (req, res) => {
     return res.status(500).json({ success: true, message: 'Failed'})
   })
 }
+

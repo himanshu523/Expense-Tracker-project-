@@ -2,6 +2,8 @@
 
 const token  = localStorage.getItem('token');
 
+const expansionDiv = document.getElementById('expansion');
+
 async function saveToDb(e) {
     try{
         e.preventDefault();
@@ -22,8 +24,36 @@ async function saveToDb(e) {
         document.body.innerHTML += `<div style="color:red;">${err} </div>`
     }
 }
+
+//showPremiumUser
+
+function showPremiumUser()
+{
+    document.getElementById('rzp-button1').style.visibility="hidden";
+     document.getElementById('message').innerHTML+= "you are a premium user";
+}
+
+//parsejwt
+
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
 // DOMContentLoaded
 window.addEventListener('DOMContentLoaded', async () => {
+    const decodeToken = parseJwt(token);
+    const ispremium = decodeToken.ispremium;
+    console.log(ispremium);
+    if(ispremium)
+    {
+        showPremiumUser();
+        showLeaderboard();
+    }
     try{
         await axios.get('http://localhost:3000/expense/getExpense',{headers:{"Authorization":token}}).then(response => {
             response.data.expenses.forEach(expense => {
@@ -83,6 +113,26 @@ function showError(err)
     document.body.innerHTML+=`<div style="color:red">${err}<div>`
 }
 
+//showLeaderBoard
+
+function showLeaderboard(){
+    const inputElement = document.createElement("input");
+    inputElement.type ="button";
+    inputElement.value="show Leaderboard";
+    inputElement.onclick = async()=>{
+        const token = localStorage.getItem('token');
+        const userLeaderBoardArray = await axios.get('http://localhost:3000/premium/showLeaderboard',{headers:{"Authorization":token}});
+        
+
+        var leaderboardElem = document.getElementById('leaderboard');
+        leaderboardElem.innerHTML+='<h1>Leader Board<h1>'
+        userLeaderBoardArray.data.forEach((userDetails)=>{
+            leaderboardElem.innerHTML+=`<li> Name - ${userDetails.name} total expense ${userDetails.totalExpenses}`
+        })
+    }
+    document.getElementById('message').appendChild(inputElement);
+}
+
 //razorpay
 
 document.getElementById('rzp-button1').onclick = async function (e) {
@@ -104,12 +154,14 @@ document.getElementById('rzp-button1').onclick = async function (e) {
      // This handler function will handle the success payment
      "handler": function (response) {
          console.log(response);
-         axios.post('http://localhost:3000/purchase/updatetransactionstatus',{
+        axios.post('http://localhost:3000/purchase/updatetransactionstatus',{
              order_id: options.order_id,
              payment_id: response.razorpay_payment_id,
-         }, { headers: {"Authorization" : token} }).then(() => {
-             alert('You are a Premium User Now')  
-             window.location.href="../view/expensepremium.html"           
+         }, { headers: {"Authorization" : token} }).then((res) => {
+             alert('You are a Premium User Now') ; 
+             showPremiumUser();
+             localStorage.setItem('token',res.data.token);
+             showLeaderboard();          
          }).catch(() => {
              alert('Something went wrong. Try Again!!!')
          })
@@ -129,3 +181,13 @@ document.getElementById('rzp-button1').onclick = async function (e) {
   alert(response.error.metadata.payment_id);
  });
 }
+
+
+
+
+
+
+
+
+
+
