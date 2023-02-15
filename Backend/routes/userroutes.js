@@ -8,6 +8,7 @@ const userAuthenticate = require('../middleware/auth');
 
 
 
+
 router.post('/addUser',userControllers.addUser);
 
 router.post('/login',userControllers.postLogin);

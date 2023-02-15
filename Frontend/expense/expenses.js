@@ -53,6 +53,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     {
         showPremiumUser();
         showLeaderboard();
+        showPreviousDownloads();
+        document.getElementById('downloadexpense').style.display = "block";
+        document.getElementById('prevDownloads-div').style.display = "block";
+        document.getElementById('downloadexpense').style.display="block";
     }
     try{
         await axios.get('http://localhost:3000/expense/getExpense',{headers:{"Authorization":token}}).then(response => {
@@ -64,6 +68,28 @@ window.addEventListener('DOMContentLoaded', async () => {
         showError(err);
     }
 })
+
+async function showPreviousDownloads() {
+    try {
+        const downloads = document.getElementById('downloads');
+        const response = await axios.get('http://localhost:3000/expense/get-downloads', {
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            }
+        });
+        // console.log('response---->',response);
+        downloads.innerHTML = '';
+
+        response.data.downloads.forEach(download => {
+            downloads.innerHTML += `<li>
+                <a href="${download.fileUrl}">${download.date}</a>
+            </li>`;
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 // Show Expense to DOM / UI
 function addNewExpensetoUI(expense) {
@@ -108,17 +134,18 @@ function removeExpensefromUI(expenseId){
 
 //download
 function download(){
-    axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+    axios.get('http://localhost:3000/expense/download', { headers: {"Authorization" : token} })
     .then((response) => {
         if(response.status === 201){
             //the bcakend is essentially sending a download link
             //  which if we open in browser, the file would download
             var a = document.createElement("a");
             a.href = response.data.fileUrl;
-            a.download = 'myexpense.csv';
+            a.download ='myexpense.csv';
             a.click();
         } else {
-            throw new Error(response.data.message)
+            
+            throw new Error(response.data.err);
         }
 
     })
@@ -182,7 +209,11 @@ document.getElementById('rzp-button1').onclick = async function (e) {
              alert('You are a Premium User Now') ; 
              showPremiumUser();
              localStorage.setItem('token',res.data.token);
-             showLeaderboard();          
+             showLeaderboard();
+             showPreviousDownloads();
+             document.getElementById('downloadexpense').style.display = "block";
+             document.getElementById('prevDownloads-div').style.display = "block";
+             document.getElementById('downloadexpense').style.display="block";          
          }).catch(() => {
              alert('Something went wrong. Try Again!!!')
          })

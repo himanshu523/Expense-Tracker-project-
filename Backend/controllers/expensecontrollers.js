@@ -1,9 +1,93 @@
 const Expense = require('../model/expense');
 const User = require('../model/user')
+const Download = require('../model/download');
 
 const path = require('path');
 
 const rootDir = require('../util/path');
+
+const AWS = require('aws-sdk')
+
+
+function uploadToS3(data,filename)
+{
+  console.log('uploaded')
+  const BUCKET_NAME ="expensetrackerapp01";
+  const KEY_ID="AKIATFVATQMHSE4ZN4WS";
+  const SECRET_KEY="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";
+
+  let s3bucket =new AWS.S3({
+    accessKeyId : KEY_ID,
+    secretAccessKey:SECRET_KEY,
+  })
+
+  
+    var params = {
+      Bucket:BUCKET_NAME,
+      Key:filename,
+      Body:data,
+      ACL:'public-read',
+    }
+
+    return new Promise((resolve,reject)=>{
+      s3bucket.upload(params,(err,s3response)=>{
+        if(err)
+        {
+          reject(err);
+          console.log('something went wrong',err);
+        }
+        else{
+         // console.log('successfully uploaded',s3response);
+          resolve(s3response.Location);
+        }
+      })
+    })
+   
+  
+
+
+}
+
+
+exports.downloadexpense = async(req,res,next)=>{
+  try{
+    const expenses = await req.user.getExpenses();
+    console.log(expenses);
+    const stringfyexpenses =JSON.stringify(expenses);
+    const userID = req.user.id;
+    const fileName =`Expense${userID}/${new Date()}.txt`;
+    const fileUrl = await uploadToS3(stringfyexpenses,fileName);
+
+    await req.user.createDownload({fileUrl: fileUrl, date: new Date()});
+
+    res.status(201).json({fileUrl,success:true});
+  }
+  catch(err)
+  {
+    console.log(err)
+    res.status(500).json({fileUrl,success:false,err:err});
+  }
+  
+}
+
+
+
+exports.getDownloads = async (req, res) => {
+  if(req.user.ispremium) {
+      try {
+          const downloads = await req.user.getDownloads();
+          console.log(downloads);
+          res.status(200).json({downloads: downloads, success: true});
+      } catch (error) {
+          res.status(500).json({error: error, success: false});
+      }
+  } else {
+      res.status(400).json({message: 'user does not have Premium Membership'});
+  }
+}
+
+
+
 
 
 
@@ -66,4 +150,6 @@ exports.deleteExpense = (req, res) => {
     return res.status(500).json({ success: true, message: 'Failed'})
   })
 }
+
+
 

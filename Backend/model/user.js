@@ -36,6 +36,7 @@ const User = sequelize.define('users',{
 const Expense = require('./expense')
 const Order = require('./orders');
 const forgotPassword = require('./forgotpassword')
+const Download = require('./download')
 
 User.hasMany(Order);
 Order.belongsTo(User);
@@ -45,6 +46,9 @@ Expense.belongsTo(User);
 
 User.hasMany(forgotPassword);
 forgotPassword.belongsTo(User);
+
+User.hasMany(Download);
+Download.belongsTo(User);
 
 sequelize.sync().then((res)=>{
     console.log('usersequelized')
