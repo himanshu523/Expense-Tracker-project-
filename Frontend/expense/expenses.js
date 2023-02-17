@@ -15,10 +15,10 @@ async function saveToDb(e) {
         }
         console.log(addExpense)
     
-        const response = await axios.post('http://localhost:3000/expense/addExpense',addExpense,{ headers:{"Authorization":token}}).then(response => {
+        const response = await axios.post('http://localhost:3000/expense/addExpense',addExpense,{ headers:{"Authorization":token}})
                 alert(response.data.message)
                 addNewExpensetoUI(response.data.expense);
-        })
+        
 
     } catch(err) {
         document.body.innerHTML += `<div style="color:red;">${err} </div>`
@@ -44,6 +44,24 @@ function parseJwt (token) {
 
     return JSON.parse(jsonPayload);
 }
+
+//getexpense
+
+async function fetchExpensesFromBackend(pageNo) {
+    try {
+        
+        const response = await axios.get(`http://localhost:3000/expense/getExpense/?page=${pageNo}`, {
+            headers: {
+                'Authorization': localStorage.getItem('token')
+            }
+        });
+        const expenses = response.data;
+        return expenses;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 // DOMContentLoaded
 window.addEventListener('DOMContentLoaded', async () => {
     const decodeToken = parseJwt(token);
@@ -58,15 +76,24 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('prevDownloads-div').style.display = "block";
         document.getElementById('downloadexpense').style.display="block";
     }
-    try{
-        await axios.get('http://localhost:3000/expense/getExpense',{headers:{"Authorization":token}}).then(response => {
-            response.data.expenses.forEach(expense => {
-                addNewExpensetoUI(expense);
-            })
-        })
-    } catch(err){
-        showError(err);
-    }
+   // try{
+    //    await axios.get('http://localhost:3000/expense/getExpense',{headers:{"Authorization":token}}).then(response => {
+    //        response.data.expenses.forEach(expense => {
+    //            addNewExpensetoUI(expense);
+    //        })
+    //    })
+    //} catch(err){
+    //    showError(err);
+    //}
+    const response = await fetchExpensesFromBackend(1);
+    console.log(response);
+    
+
+    const expenses = response.expenses;
+
+    addNewExpensetoUI(expenses);
+
+    addPagination(response);
 })
 
 async function showPreviousDownloads() {
@@ -92,23 +119,44 @@ async function showPreviousDownloads() {
 }
 
 // Show Expense to DOM / UI
-function addNewExpensetoUI(expense) {
+function addNewExpensetoUI(expenses) {
     try{
+        
     // After submit clear input field
     document.getElementById("amount").value = '';
     document.getElementById("description").value = '';
     document.getElementById("category").value = '';
+   
 
     const parentElement = document.getElementById('expenseTracker');
-    const expenseElemId = `expense-${expense.id}`;
+    if(Array.isArray(expenses)){
+    expenses.forEach((expense)=>
+    {
+        
+        const expenseElemId = `expense-${expense.id}`;
+        parentElement.innerHTML += `
+            <li id=${expenseElemId}>
+                ${expense.expenseamount} - ${expense.category} - ${expense.description}
+                
+                <button onclick='deleteExpense(event, ${expense.id})'>
+                    Delete Expense
+                </button>
+            </li>`
+    })
+ }
+ else{
+    const expenseElemId = `expense-${expenses.id}`;
     parentElement.innerHTML += `
         <li id=${expenseElemId}>
-            ${expense.expenseamount} - ${expense.category} - ${expense.description}
+            ${expenses.expenseamount} - ${expenses.category} - ${expenses.description}
             
-            <button onclick='deleteExpense(event, ${expense.id})'>
+            <button onclick='deleteExpense(event, ${expenses.id})'>
                 Delete Expense
             </button>
         </li>`
+ }
+
+
     } catch(err){
         showError(err);
     }
@@ -232,6 +280,60 @@ document.getElementById('rzp-button1').onclick = async function (e) {
   alert(response.error.metadata.order_id);
   alert(response.error.metadata.payment_id);
  });
+}
+
+
+//pagination
+
+function addPagination(response) {
+    const paginationDiv = document.querySelector('.pagination');
+    paginationDiv.innerHTML = '';
+
+    if(response.previousPage!==1 && response.currentPage!==1){
+        paginationDiv.innerHTML += `
+            <button>${1}</button>
+        `;
+        paginationDiv.innerHTML += '<<';
+    }
+
+    if(response.hasPreviousPage) {
+        paginationDiv.innerHTML += `
+            <button>${response.previousPage}</button>
+        `;
+    }
+
+    paginationDiv.innerHTML += `
+        <button class="active">${response.currentPage}</button>
+    `;
+
+    if(response.hasNextPage) {
+        paginationDiv.innerHTML += `
+            <button>${response.nextPage}</button>
+        `;
+    }
+
+    if(response.currentPage !== response.lastPage && response.nextPage!==response.lastPage) {
+        paginationDiv.innerHTML += '>>';
+        paginationDiv.innerHTML += `
+            <button>${response.lastPage}</button>
+        `;
+    }
+}
+
+document.querySelector('.pagination').onclick = async (e) => {
+    e.preventDefault();
+
+
+    const page = e.target.innerHTML;
+
+    const response = await fetchExpensesFromBackend(page);
+    console.log(response);
+
+    const expenses = response.expenses;
+
+    addNewExpensetoUI(expenses);
+
+    addPagination(response);
 }
 
 

@@ -124,14 +124,42 @@ exports.addExpense = async (req, res) => {
   }
 };
 // Get Expense
+
+const ITEMS_PER_PAGE = 4;
+
 exports.getExpense = (req, res) => {
-  try{
-  Expense.findAll({where:{userId:req.user.id}}).then(expenses => {
-    return res.status(200).json({expenses, success:true})
-  })
-  }catch(err) {
-    return res.status(500).json({ error: err, success: false})
-  }
+  const page = +req.query.page;
+  let totalItems;
+  let lastPage;
+
+  req.user.getExpenses({
+      offset: (page - 1)*(ITEMS_PER_PAGE), 
+      limit: ITEMS_PER_PAGE
+    })
+  
+      .then(async (limitedExpenses) => {
+          // res.status(200).json(limitedExpenses);
+          totalItems = await Expense.count({where: {userId: req.user.id}});
+
+          lastPage = Math.ceil(totalItems / ITEMS_PER_PAGE);
+          if(lastPage === 0) {
+              lastPage = 1;
+          }
+
+          res.status(200).json({
+              expenses: limitedExpenses,
+              totalExpenses: totalItems,
+              currentPage: page,
+              hasNextPage: (page*ITEMS_PER_PAGE) < totalItems,
+              hasPreviousPage: page > 1,
+              nextPage: page + 1,
+              previousPage: page - 1,
+              lastPage: lastPage
+          })
+      })
+      .catch(err => {
+          res.status(500).json({success: false, message: err});
+      })
 }
 
 // Delete
