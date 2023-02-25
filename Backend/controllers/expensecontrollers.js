@@ -127,39 +127,34 @@ exports.addExpense = async (req, res) => {
 
 const ITEMS_PER_PAGE = 4;
 
-exports.getExpense = (req, res) => {
-  const page = +req.query.page;
-  let totalItems;
-  let lastPage;
-
-  req.user.getExpenses({
-      offset: (page - 1)*(ITEMS_PER_PAGE), 
-      limit: ITEMS_PER_PAGE
-    })
-  
-      .then(async (limitedExpenses) => {
-          // res.status(200).json(limitedExpenses);
-          totalItems = await Expense.count({where: {userId: req.user.id}});
-
-          lastPage = Math.ceil(totalItems / ITEMS_PER_PAGE);
-          if(lastPage === 0) {
-              lastPage = 1;
-          }
-
-          res.status(200).json({
-              expenses: limitedExpenses,
-              totalExpenses: totalItems,
-              currentPage: page,
-              hasNextPage: (page*ITEMS_PER_PAGE) < totalItems,
-              hasPreviousPage: page > 1,
-              nextPage: page + 1,
-              previousPage: page - 1,
-              lastPage: lastPage
-          })
+exports.getExpenses = async (req, res,next) => {
+  var totalExpenses;
+  let positive=0.00, negative=0.00;
+  const page = +req.params.pageNo || 1;
+  let totalItems=Expense.findAll({where: {userId: req.user.id}}).then(response=>{
+      totalExpenses=response.length
+      response.map(i=>{
+          (i.amount>0)?positive+=i.amount:negative+=i.amount;
       })
-      .catch(err => {
-          res.status(500).json({success: false, message: err});
-      })
+  }).catch(err=>console.log(err))
+
+  await totalItems;
+
+  Expense.findAll({where: {userId: req.user.id}, offset: (page-1)*ITEMS_PER_PAGE, limit: ITEMS_PER_PAGE})
+  .then(response=>{
+      res.status(200).send({
+          response: response,
+          currentPage: page,
+          hasNextPage: ITEMS_PER_PAGE * page < totalExpenses,
+          hasPreviousPage: page > 1,
+          nextPage:page+1,
+          previousPage:page-1,
+          positive:positive,
+          negative:negative,
+          lastPage:Math.ceil(totalExpenses/ITEMS_PER_PAGE),
+          totalItems: totalExpenses
+      });
+  })
 }
 
 // Delete

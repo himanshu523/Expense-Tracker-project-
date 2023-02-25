@@ -6,7 +6,7 @@ const userAuthenticate = require('../middleware/auth');
 
 router.post('/addExpense',userAuthenticate.authenticate, expenseControllers.addExpense);
 
-router.get('/getExpense',userAuthenticate.authenticate, expenseControllers.getExpense);
+router.get('/expensesData/:pageNo', userAuthenticate.authenticate , expenseControllers.getExpenses);
 
 router.delete('/deleteExpense/:expenseid',userAuthenticate.authenticate, expenseControllers.deleteExpense);
 

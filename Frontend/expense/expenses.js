@@ -45,22 +45,6 @@ function parseJwt (token) {
     return JSON.parse(jsonPayload);
 }
 
-//getexpense
-
-async function fetchExpensesFromBackend(pageNo) {
-    try {
-        
-        const response = await axios.get(`http://localhost:3000/expense/getExpense/?page=${pageNo}`, {
-            headers: {
-                'Authorization': localStorage.getItem('token')
-            }
-        });
-        const expenses = response.data;
-        return expenses;
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 // DOMContentLoaded
 window.addEventListener('DOMContentLoaded', async () => {
@@ -76,25 +60,128 @@ window.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('prevDownloads-div').style.display = "block";
         document.getElementById('downloadexpense').style.display="block";
     }
-   // try{
-    //    await axios.get('http://localhost:3000/expense/getExpense',{headers:{"Authorization":token}}).then(response => {
-    //        response.data.expenses.forEach(expense => {
-    //            addNewExpensetoUI(expense);
-    //        })
-    //    })
-    //} catch(err){
-    //    showError(err);
-    //}
-    const response = await fetchExpensesFromBackend(1);
-    console.log(response);
     
-
-    const expenses = response.expenses;
-
-    addNewExpensetoUI(expenses);
-
-    addPagination(response);
+        displayList();
 })
+
+// Delete Expense
+function deleteExpense(e, expenseId) {
+    try{
+    axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`,{headers:{"Authorization":token}}).then((response) => {
+        removeExpensefromUI(expenseId)
+        alert(response.data.message)
+    })
+    } catch(err) {
+       showError(err);
+    }
+}
+
+function displayList(e) {
+    let pageNo;
+    try{
+    
+        pageNo=e.target.id
+    }
+    catch(err){
+        pageNo=1
+    }
+    let listGroup=document.getElementById('list')
+    listGroup.innerHTML=""
+    let getRequest=async()=>await axios({
+        method: 'get',
+        url: `http://localhost:3000/expense/expensesData/${pageNo}`,
+        headers: {"Authorization" : token }
+    }).then(res=>{
+        console.log(res)
+        if (res.data.response==0 || !res.data.response){
+            // document.querySelector('h3').style.visibility="hidden"
+            return
+        }
+        else{
+           
+           
+            res.data.response.forEach((expenseDetails)=>{
+                let listItem=document.createElement('li')
+                listItem.id=`expense-${expenseDetails.id}`
+                let span=document.createElement('span')
+                let amountItem=document.createTextNode(`₹${(expenseDetails.expenseamount)}`)
+                let catgItem=document.createTextNode(`${expenseDetails.category}`)
+                let descItem=document.createTextNode(`${expenseDetails.description}`)
+                let delBtn=document.createElement('button')
+                
+                delBtn.className="delete-btn"
+                delBtn.innerHTML="Delete Expense"
+                
+                delBtn.addEventListener("click",function deleteExpense() {
+                    try{
+                    axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseDetails.id}`,{headers:{"Authorization":token}}).then((response) => {
+                        removeExpensefromUI(expenseDetails.id)
+                        alert(response.data.message)
+                    })
+                    } catch(err) {
+                       showError(err);
+                    }
+                })
+                   
+                
+              
+                listItem.append(amountItem)
+                span.appendChild(descItem)
+                listItem.append(span)
+                listItem.append(catgItem)
+                listItem.append(delBtn)
+                listGroup.appendChild(listItem)
+        })
+        var buttonList=document.querySelector('.pages-container')
+        buttonList.innerHTML=""
+
+        if(res.data.lastPage===2){
+            if(res.data.hasPreviousPage){
+                let button=document.createElement('button')
+                button.innerHTML=res.data.previousPage
+                button.id=res.data.previousPage
+                buttonList.appendChild(button)
+            }
+            let button=document.createElement('button')
+            button.innerHTML=res.data.currentPage
+            button.id=res.data.currentPage
+            buttonList.appendChild(button)
+            if(res.data.hasNextPage){
+                let button=document.createElement('button')
+                button.innerHTML=res.data.nextPage
+                button.id=res.data.nextPage
+                buttonList.appendChild(button)
+            }
+        }
+        else if(res.data.lastPage>2){
+            if(res.data.hasPreviousPage){
+                let button=document.createElement('button')
+                button.innerHTML=res.data.previousPage
+                button.id=res.data.previousPage
+                buttonList.appendChild(button)
+            }
+            let button=document.createElement('button')
+            button.innerHTML=res.data.currentPage
+            button.id=res.data.currentPage
+            buttonList.appendChild(button)
+            if(res.data.hasNextPage){
+                let button=document.createElement('button')
+                button.innerHTML=res.data.nextPage
+                button.id=res.data.nextPage
+                buttonList.appendChild(button)
+            }
+            if(res.data.currentPage!=res.data.lastPage && res.data.nextPage!=res.data.lastPage){
+                let button=document.createElement('button')
+                button.innerHTML=res.data.lastPage
+                button.id=res.data.lastPage
+                buttonList.appendChild(button)
+            }
+        }
+        buttonList.addEventListener('click', displayList)
+        }
+    }).catch(err=>console.log(err))
+    getRequest()
+}
 
 async function showPreviousDownloads() {
     try {
@@ -119,60 +206,32 @@ async function showPreviousDownloads() {
 }
 
 // Show Expense to DOM / UI
-function addNewExpensetoUI(expenses) {
+function addNewExpensetoUI(expense) {
     try{
-        
     // After submit clear input field
     document.getElementById("amount").value = '';
     document.getElementById("description").value = '';
     document.getElementById("category").value = '';
-   
 
-    const parentElement = document.getElementById('expenseTracker');
-    if(Array.isArray(expenses)){
-    expenses.forEach((expense)=>
-    {
-        
-        const expenseElemId = `expense-${expense.id}`;
-        parentElement.innerHTML += `
-            <li id=${expenseElemId}>
-                ${expense.expenseamount} - ${expense.category} - ${expense.description}
-                
-                <button onclick='deleteExpense(event, ${expense.id})'>
-                    Delete Expense
-                </button>
-            </li>`
-    })
- }
- else{
-    const expenseElemId = `expense-${expenses.id}`;
+    
+    
+    const parentElement = document.getElementById('list');
+    const expenseElemId = `expense-${expense.id}`;
     parentElement.innerHTML += `
         <li id=${expenseElemId}>
-            ${expenses.expenseamount} - ${expenses.category} - ${expenses.description}
-            
-            <button onclick='deleteExpense(event, ${expenses.id})'>
+            ${expense.expenseamount} - ${expense.category} - ${expense.description}
+            <button onclick='deleteExpense(event, ${expense.id})'>
                 Delete Expense
             </button>
         </li>`
- }
-
-
     } catch(err){
+        // console.log(err)
         showError(err);
     }
 }
 
-// Delete Expense
-function deleteExpense(e, expenseId) {
-    try{
-    axios.delete(`http://localhost:3000/expense/deleteExpense/${expenseId}`,{headers:{"Authorization":token}}).then((response) => {
-        removeExpensefromUI(expenseId)
-        alert(response.data.message)
-    })
-    } catch(err) {
-       showError(err);
-    }
-}
+
+
 
 // Remove from UI
 function removeExpensefromUI(expenseId){
@@ -283,58 +342,7 @@ document.getElementById('rzp-button1').onclick = async function (e) {
 }
 
 
-//pagination
 
-function addPagination(response) {
-    const paginationDiv = document.querySelector('.pagination');
-    paginationDiv.innerHTML = '';
-
-    if(response.previousPage!==1 && response.currentPage!==1){
-        paginationDiv.innerHTML += `
-            <button>${1}</button>
-        `;
-        paginationDiv.innerHTML += '<<';
-    }
-
-    if(response.hasPreviousPage) {
-        paginationDiv.innerHTML += `
-            <button>${response.previousPage}</button>
-        `;
-    }
-
-    paginationDiv.innerHTML += `
-        <button class="active">${response.currentPage}</button>
-    `;
-
-    if(response.hasNextPage) {
-        paginationDiv.innerHTML += `
-            <button>${response.nextPage}</button>
-        `;
-    }
-
-    if(response.currentPage !== response.lastPage && response.nextPage!==response.lastPage) {
-        paginationDiv.innerHTML += '>>';
-        paginationDiv.innerHTML += `
-            <button>${response.lastPage}</button>
-        `;
-    }
-}
-
-document.querySelector('.pagination').onclick = async (e) => {
-    e.preventDefault();
-
-
-    const page = e.target.innerHTML;
-
-    const response = await fetchExpensesFromBackend(page);
-    console.log(response);
-
-    const expenses = response.expenses;
-
-    addNewExpensetoUI(expenses);
-
-    addPagination(response);
-}
 
 
 
