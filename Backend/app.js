@@ -2,9 +2,31 @@ const express = require('express');
 
 const app = express();
 
-const bodyParser = require('body-parser');
+require('dotenv').config();
+
+const fs = require('fs');
 
 const path = require('path');
+
+const morgan =require('morgan');
+const helmet = require('helmet');
+
+app.use(helmet());
+
+
+
+const accessLogStream = fs.createWriteStream(
+    path.join(__dirname, 'access.log'),
+    {flags: 'a'}
+);
+
+app.use(morgan('combined', {stream: accessLogStream}));
+
+
+
+const bodyParser = require('body-parser');
+
+
 
 const userRoutes = require('./routes/userroutes');
 
@@ -48,5 +70,5 @@ app.use(errorControllers.err404);
 
 
 //sequelize.sync({fo}).then(()=>{
-    app.listen(3000);
+    app.listen(process.env.PORT||3000);
 //}).catch(err=>console.log(err));

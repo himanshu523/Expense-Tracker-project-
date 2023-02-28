@@ -8,13 +8,15 @@ const rootDir = require('../util/path');
 
 const AWS = require('aws-sdk')
 
+require('dotenv').config();
+
 
 function uploadToS3(data,filename)
 {
   console.log('uploaded')
-  const BUCKET_NAME ="expensetrackerapp01";
-  const KEY_ID="AKIATFVATQMHSE4ZN4WS";
-  const SECRET_KEY="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";
+  const BUCKET_NAME =process.env.A_BUCKET_NAME;
+  const KEY_ID=process.env.A_KEY_ID;
+  const SECRET_KEY=process.env.A_SECRET_KEY;
 
   let s3bucket =new AWS.S3({
     accessKeyId : KEY_ID,

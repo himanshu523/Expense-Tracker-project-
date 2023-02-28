@@ -116,7 +116,7 @@ exports.updatePassword = (req, res) => {
                 if(user) {
                     //encrypt the password
 
-                    const saltRounds = 10;
+                    const saltRounds = process.env.BCRYPT_SALTROUNDS;
                     bcrypt.genSalt(saltRounds, function(err, salt) {
                         if(err){
                             console.log(err);

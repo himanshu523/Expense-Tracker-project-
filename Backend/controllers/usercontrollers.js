@@ -10,8 +10,11 @@ const saltRounds = 10;
 
 const jwt = require('jsonwebtoken');
 
+require('dotenv').config();
+
 const generateAccessToken=(id,name,ispremium)=>{
-    return jwt.sign({userId:id,name:name,ispremium},'secretKey');
+   // console.log(process.env.BCRYPT_SERCRET_KEY)
+    return jwt.sign({userId:id,name:name,ispremium},`${process.env.BCRYPT_SERCRET_KEY}`);
 }
 
     
